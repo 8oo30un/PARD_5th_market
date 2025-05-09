@@ -140,7 +140,7 @@ function OrderCompletionScreen() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("100146954603 케이뱅크");
+      await navigator.clipboard.writeText("<계좌번호 수정>");
       setIsCopied(true); // 상태를 "복사완료"로 변경
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -152,6 +152,12 @@ function OrderCompletionScreen() {
   }, []);
 
   const handleOnUpdate = async () => {
+    // 유효성 검사: null, 빈 문자열, 공백 문자열 방지
+    if (!phoneNumber || phoneNumber.trim() === "") {
+      alert("전화번호를 입력해주세요.");
+      return; // 아래 로직 실행하지 않음
+    }
+
     const docRef = doc(dbService, "order", docId);
     await updateDoc(docRef, {
       phoneNumber: phoneNumber, // 업데이트 문서에 전화번호 사용
@@ -168,16 +174,23 @@ function OrderCompletionScreen() {
   };
 
   function formatPrice(price) {
-    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price);
+    return new Intl.NumberFormat("ko-KR", {
+      style: "currency",
+      currency: "KRW",
+    }).format(price);
   }
 
   return (
     <Container>
       <CheckIcon src={checkMark} alt="Check Mark" />
       <Message>
-        <span>주문</span> 완료를 위해 <br/>번호를 입력해주세요!
+        <span>주문</span> 완료를 위해 <br />
+        번호를 입력해주세요!
       </Message>
-      <AcountText>{formatPrice(localStorage.getItem("price"))}원,<br/> 100146954603 케이뱅크 (한동공략1조)</AcountText>
+      <AcountText>
+        {formatPrice(localStorage.getItem("price"))}원,
+        <br /> <span>&lt; 계좌번호 수정 &gt;</span>
+      </AcountText>
       <SubmitText> 입금 후 내역을 부스 운영자들에게 보여주세요.</SubmitText>
       <Button onClick={handleCopy}>
         <Icon
@@ -191,11 +204,11 @@ function OrderCompletionScreen() {
       </Button>
       <StyledInput
         placeholder="휴대폰 번호"
-        value={phoneNumber} 
+        value={phoneNumber}
         onChange={handleChange}
       />
       <ExplainText>
-       번호를 적고 앞에 스태프에게 보여주세요!
+        번호를 적고 앞에 스태프에게 보여주세요!
         <br />
         음식이 완료되면, 입력하신 번호로 문자를 보내드립니다!
         <br />
