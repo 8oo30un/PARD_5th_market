@@ -64,7 +64,7 @@ const Modal = styled.button`
   top: 96%;
   left: 92%;
   transform: translate(-50%, -50%);
-  display: 'block';
+  display: "block";
   border: none;
   background-color: transparent;
 `;
@@ -74,16 +74,16 @@ const NewQuizImg = styled.img`
   height: auto;
 `;
 
-const TText =styled.div`
-color: var(--Color-2, #363636);
-text-align: center;
-font-family: "Noto Sans KR";
-font-size: 2.5vw;
-font-style: normal;
-font-weight: 400;
-line-height: 140%;
-margin-bottom: 12vw;
-`
+const TText = styled.div`
+  color: var(--Color-2, #363636);
+  text-align: center;
+  font-family: "Noto Sans KR";
+  font-size: 2.5vw;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  margin-bottom: 12vw;
+`;
 
 function HomePage() {
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ function HomePage() {
       <Button onClick={() => navigate("/quiz")}>퀴즈풀기</Button>
       <TextLogo src={require("../../Asset/logo.png")} />
       <Modal onClick={() => navigate("/vote")}>
-      <NewQuizImg src={require("../../Asset/notify.png")} />
+        <NewQuizImg src={require("../../Asset/notify.png")} />
       </Modal>
     </Container>
   );

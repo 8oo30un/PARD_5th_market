@@ -16,6 +16,7 @@ import OrderCkeckMan from "./Components/App/Web/OrderCkeckMan.js";
 import GirsRoomStory from "./Components/App/Web/GirsRoomStory.js";
 import VoteScreen from "./Components/App/Web/VotePage.js";
 import LastPage from "./Components/App/Web/LastPage.js";
+import QRPage from "./Components/App/Web/QRPage.js";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
             <ScrollToTop />
             <Routes>
               {/* 기본 화면 설정 */}
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<QRPage />} />
               <Route path="/order" element={<MenuPage />} />
               <Route path="/menuCheck" element={<MenuCheck />} />
               <Route path="/quiz" element={<QuizPage />} />
@@ -38,6 +39,7 @@ function App() {
               <Route path="/order-GirsRoomStory" element={<GirsRoomStory />} />
               <Route path="/vote" element={<VoteScreen />} />
               <Route path="/LastPage" element={<LastPage />} />
+              <Route path="/home" element={<HomePage />} />
             </Routes>
           </OrderProvider>
         </ScoreProvider>

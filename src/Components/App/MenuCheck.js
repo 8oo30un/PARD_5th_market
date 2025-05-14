@@ -1,11 +1,17 @@
+import { PacmanLoader } from "react-spinners";
 import styled from "styled-components";
 import { useOrder } from "../../contexts/OrderContext";
 import React, { useState, useEffect, useContext } from "react";
 import { ScoreContext } from "../../contexts/ScoreContext";
 import { useNavigate } from "react-router-dom";
-import { dbService } from "../../fbase";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
-import { PacmanLoader } from "react-spinners";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { dbService } from "../../fbase"; // fbase.js에서 dbService 가져오기
 
 const Div = styled.div`
   display: flex;
@@ -175,11 +181,11 @@ function MenuCheck() {
       console.log("Document written with ID: ", docRef.id);
 
       await updateDoc(doc(dbService, "order", docRef.id), {
-        id: docRef.id
+        id: docRef.id,
       });
       navigate("/order-submit");
       localStorage.setItem("id", docRef.id);
-      localStorage.setItem("price", price-sale);
+      localStorage.setItem("price", price - sale);
       SetPrice(0);
       SetSale(0);
       setOrders([0, 0]);
@@ -211,7 +217,10 @@ function MenuCheck() {
   }
 
   function formatPrice(price) {
-    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price);
+    return new Intl.NumberFormat("ko-KR", {
+      style: "currency",
+      currency: "KRW",
+    }).format(price);
   }
 
   return (

@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { collection, doc, updateDoc, onSnapshot, deleteDoc, query, orderBy, } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  updateDoc,
+  onSnapshot,
+  deleteDoc,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { dbService } from "../../../fbase";
 import ScheduleItemComponent from "./ScheduleItemComponent";
 
@@ -45,8 +53,6 @@ const ScheduleDiv = styled.div`
   margin-top: 30px;
 `;
 
-
-
 const Title = styled.div`
   color: var(--black-background, #1a1a1a);
   font-family: "Pretendard";
@@ -58,25 +64,29 @@ const Title = styled.div`
 
 const OrderCkeckMan = () => {
   const [schedules, setSchedule] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    const q = query(collection(dbService, "order"), orderBy("time"));  // 시간 내림차순 정렬
- // 'time' 필드에 따라 정렬
+    const q = query(collection(dbService, "order"), orderBy("time")); // 시간 내림차순 정렬
+    // 'time' 필드에 따라 정렬
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
         const newData = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
-          time: doc.data().time ? new Date(doc.data().time.toDate()).toLocaleString() :null
+          time: doc.data().time
+            ? new Date(doc.data().time.toDate()).toLocaleString()
+            : null,
         }));
         setSchedule(newData);
+        setTotalCount(snapshot.docs.length);
       },
       (error) => {
         console.error("Error fetching schedules:", error);
       }
     );
-  
+
     // 구독 취소 함수를 반환하여 컴포넌트 언마운트 시 실시간 업데이트 중지
     return () => unsubscribe();
   }, []);
@@ -84,13 +94,12 @@ const OrderCkeckMan = () => {
   const handleStatusChange = async (schedule) => {
     const newStatus = schedule.status === 0 ? 1 : 2;
     const message =
-      schedule.status === 0 ? "조리시키겠습니까?" : "주문 처리 하시겠습니까?";
+      schedule.status === 0 ? "접수시키겠습니까?" : "완료 처리 하시겠습니까?";
 
     if (window.confirm(message)) {
       try {
         const docRef = doc(dbService, "order", schedule.id);
         await updateDoc(docRef, { status: newStatus });
-        alert("상태가 업데이트되었습니다.");
         const updatedSchedules = schedules.map((s) =>
           s.id === schedule.id ? { ...s, status: newStatus } : s
         );
@@ -102,7 +111,6 @@ const OrderCkeckMan = () => {
     }
   };
 
-
   return (
     <DDiv>
       <TitleDiv>
@@ -111,10 +119,20 @@ const OrderCkeckMan = () => {
       <BodyDiv>
         <RightDiv>
           <HomeTitle>일정 업데이트</HomeTitle>
+          <div style={{ marginTop: "10px", fontSize: "16px", color: "#555" }}>
+            총 주문 수: {totalCount}건
+          </div>
           <ScheduleDiv>
-             {schedules.filter(schedule => schedule.status !== 2).map((schedule, index) => (
-        <ScheduleItemComponent key={schedule.id} schedule={schedule} index={index} handleStatusChange={handleStatusChange} />
-      ))}
+            {schedules
+              .filter((schedule) => schedule.status !== 2)
+              .map((schedule, index) => (
+                <ScheduleItemComponent
+                  key={schedule.id}
+                  schedule={schedule}
+                  index={index}
+                  handleStatusChange={handleStatusChange}
+                />
+              ))}
           </ScheduleDiv>
         </RightDiv>
       </BodyDiv>

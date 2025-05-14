@@ -122,14 +122,23 @@ const Button = styled.button`
 
 const GirsRoomStory = () => {
   const [schedules, setSchedule] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(dbService, "order"), (snapshot) => {
-      const newData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setSchedule(newData);
-    }, (error) => {
-      console.error("Error fetching schedules:", error);
-    });
+    const unsubscribe = onSnapshot(
+      collection(dbService, "order"),
+      (snapshot) => {
+        const newData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setSchedule(newData);
+        setTotalCount(snapshot.docs.length);
+      },
+      (error) => {
+        console.error("Error fetching schedules:", error);
+      }
+    );
 
     return () => unsubscribe(); // Cleanup the subscription on unmount
   }, []);
@@ -137,7 +146,7 @@ const GirsRoomStory = () => {
   const handleStatusChange = async (schedule) => {
     const newStatus = schedule.status === 0 ? 1 : 2;
     const message =
-      schedule.status === 0 ? "조리시키겠습니까?" : "주문 처리 하시겠습니까?";
+      schedule.status === 0 ? "조리시키겠습니까?" : "조리 완료 하시겠습니까?";
 
     if (window.confirm(message)) {
       try {
@@ -159,6 +168,9 @@ const GirsRoomStory = () => {
       <BodyDiv>
         <RightDiv>
           <HomeTitle>주문 업데이트</HomeTitle>
+          <div style={{ marginTop: "10px", fontSize: "16px", color: "#555" }}>
+            총 주문 수: {totalCount}건
+          </div>
           <ScheduleDiv>
             {schedules
               .filter((schedule) => schedule.status == 1)
@@ -167,13 +179,13 @@ const GirsRoomStory = () => {
                   <FlexDiv>
                     <ScheduleFirstDiv>
                       <FlexDiv top={-5}>
-                        <HomeTitle>주문 순서 : {index+1}</HomeTitle>
+                        <HomeTitle>주문 순서 : {index + 1}</HomeTitle>
                         <div>
-                        <NumText>
+                          <NumText>
                             삼 + 소 수량 : <span>{schedule.menuCount[0]}</span>
                           </NumText>
                           <NumText>
-                            삼 + 비 수량 :  <span>{schedule.menuCount[1]}</span>
+                            삼 + 비 수량 : <span>{schedule.menuCount[1]}</span>
                           </NumText>
                         </div>
                       </FlexDiv>
