@@ -20,7 +20,7 @@ const QRPage = () => {
         style={{ display: isLoaded ? "inline" : "none" }}
       />
       <p>이 QR코드를 스캔하면 앱으로 이동합니다.</p>
-      <div onClick={() => navigate("/home")}>
+      <div onClick={() => navigate("/")}>
         <OrderButton>주문 화면</OrderButton>
       </div>
     </div>

@@ -103,7 +103,7 @@ function LastPage() {
         <br />
         작은 선물을 드립니다!
       </Explain>
-      <SubmitButton onClick={() => navigate("/")}>
+      <SubmitButton onClick={() => navigate("/qr")}>
         홈 화면으로 돌아가기
       </SubmitButton>
     </Div>

@@ -31,21 +31,17 @@ function App() {
               <ScrollToTop />
               <Routes>
                 {/* 기본 화면 설정 */}
-                <Route path="/" element={<QRPage />} />
-                <Route path="/order" element={<MenuPage />} />
+                <Route path="/qr" element={<QRPage />} />
+                <Route path="/" element={<HomePage />} />
                 <Route path="/menuCheck" element={<MenuCheck />} />
-                <Route path="/quiz" element={<QuizPage />} />
-                <Route path="/quiz-finish" element={<QuizCompletionScreen />} />
-                <Route path="/quiz-result" element={<QuizResult />} />
                 <Route
                   path="/order-submit"
                   element={<OrderCompletionScreen />}
                 />
                 <Route path="/counter" element={<OrderCkeckMan />} />
                 <Route path="/kitchen" element={<GirsRoomStory />} />
-                <Route path="/vote" element={<VoteScreen />} />
                 <Route path="/LastPage" element={<LastPage />} />
-                <Route path="/home" element={<HomePage />} />
+                <Route path="/order" element={<MenuPage />} />
                 <Route path="/order-finished" element={<OrderFinishedPage />} />
               </Routes>
             </OrderProvider>
