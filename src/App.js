@@ -17,32 +17,40 @@ import GirsRoomStory from "./Components/App/Web/GirsRoomStory.js";
 import VoteScreen from "./Components/App/Web/VotePage.js";
 import LastPage from "./Components/App/Web/LastPage.js";
 import QRPage from "./Components/App/Web/QRPage.js";
+import { MenuProvider } from "./contexts/MenuContext.js";
+import OrderFinishedPage from "./Components/App/Web/OrderFinishedPage.js";
 
 function App() {
   return (
     <Router>
       <PreventRefresh />
       <ThemeProvider theme={theme}>
-        <ScoreProvider>
-          <OrderProvider>
-            <ScrollToTop />
-            <Routes>
-              {/* 기본 화면 설정 */}
-              <Route path="/" element={<QRPage />} />
-              <Route path="/order" element={<MenuPage />} />
-              <Route path="/menuCheck" element={<MenuCheck />} />
-              <Route path="/quiz" element={<QuizPage />} />
-              <Route path="/quiz-finish" element={<QuizCompletionScreen />} />
-              <Route path="/quiz-result" element={<QuizResult />} />
-              <Route path="/order-submit" element={<OrderCompletionScreen />} />
-              <Route path="/order-CheckMan" element={<OrderCkeckMan />} />
-              <Route path="/order-GirsRoomStory" element={<GirsRoomStory />} />
-              <Route path="/vote" element={<VoteScreen />} />
-              <Route path="/LastPage" element={<LastPage />} />
-              <Route path="/home" element={<HomePage />} />
-            </Routes>
-          </OrderProvider>
-        </ScoreProvider>
+        <MenuProvider>
+          <ScoreProvider>
+            <OrderProvider>
+              <ScrollToTop />
+              <Routes>
+                {/* 기본 화면 설정 */}
+                <Route path="/" element={<QRPage />} />
+                <Route path="/order" element={<MenuPage />} />
+                <Route path="/menuCheck" element={<MenuCheck />} />
+                <Route path="/quiz" element={<QuizPage />} />
+                <Route path="/quiz-finish" element={<QuizCompletionScreen />} />
+                <Route path="/quiz-result" element={<QuizResult />} />
+                <Route
+                  path="/order-submit"
+                  element={<OrderCompletionScreen />}
+                />
+                <Route path="/counter" element={<OrderCkeckMan />} />
+                <Route path="/kitchen" element={<GirsRoomStory />} />
+                <Route path="/vote" element={<VoteScreen />} />
+                <Route path="/LastPage" element={<LastPage />} />
+                <Route path="/home" element={<HomePage />} />
+                <Route path="/order-finished" element={<OrderFinishedPage />} />
+              </Routes>
+            </OrderProvider>
+          </ScoreProvider>
+        </MenuProvider>
       </ThemeProvider>
     </Router>
   );

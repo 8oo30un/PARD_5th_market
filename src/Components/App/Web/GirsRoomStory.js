@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { dbService } from "../../../fbase";
+import { menuData } from "../../../contexts/MenuContext";
 
 const DDiv = styled.div`
   background: #fff;
@@ -182,10 +183,12 @@ const GirsRoomStory = () => {
                         <HomeTitle>주문 순서 : {index + 1}</HomeTitle>
                         <div>
                           <NumText>
-                            삼 + 소 수량 : <span>{schedule.menuCount[0]}</span>
+                            {menuData[0].name}{" "}
+                            <span>{schedule.menuCount[0]}</span>
                           </NumText>
                           <NumText>
-                            삼 + 비 수량 : <span>{schedule.menuCount[1]}</span>
+                            {menuData[1].name}{" "}
+                            <span>{schedule.menuCount[1]}</span>
                           </NumText>
                         </div>
                       </FlexDiv>

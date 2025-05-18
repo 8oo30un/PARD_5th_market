@@ -140,7 +140,7 @@ function OrderCompletionScreen() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("<계좌번호 수정>");
+      await navigator.clipboard.writeText("79421209518");
       setIsCopied(true); // 상태를 "복사완료"로 변경
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -164,7 +164,7 @@ function OrderCompletionScreen() {
     });
     if (docRef) {
       console.log("update 성공");
-      navigate("/");
+      navigate("/order-finished");
       alert("주문 감사드립니다! \n맛있게, 금방 조리해드리겠습니다.");
     }
   };
@@ -189,7 +189,7 @@ function OrderCompletionScreen() {
       </Message>
       <AcountText>
         {formatPrice(localStorage.getItem("price"))}원,
-        <br /> <span>&lt; 계좌번호 수정 &gt;</span>
+        <br /> <span>79421209518 카카오뱅크 김기영</span>
       </AcountText>
       <SubmitText> 입금 후 내역을 부스 운영자들에게 보여주세요.</SubmitText>
       <Button onClick={handleCopy}>

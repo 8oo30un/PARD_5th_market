@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
   collection,
@@ -63,11 +64,13 @@ const Title = styled.div`
 `;
 
 const OrderCkeckMan = () => {
+  const location = useLocation();
   const [schedules, setSchedule] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(dbService, "order"), orderBy("time")); // 시간 내림차순 정렬
+    const q = query(collection(dbService, "order"), orderBy("time", "desc")); // 시간 내림차순 정렬
     // 'time' 필드에 따라 정렬
     const unsubscribe = onSnapshot(
       q,
@@ -112,7 +115,7 @@ const OrderCkeckMan = () => {
   };
 
   return (
-    <DDiv>
+    <DDiv key={location.pathname}>
       <TitleDiv>
         <Title>주문 체크</Title>
       </TitleDiv>
@@ -122,6 +125,12 @@ const OrderCkeckMan = () => {
           <div style={{ marginTop: "10px", fontSize: "16px", color: "#555" }}>
             총 주문 수: {totalCount}건
           </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            style={{ marginTop: "20px", marginBottom: "10px" }}
+          >
+            주문 히스토리 보기
+          </button>
           <ScheduleDiv>
             {schedules
               .filter((schedule) => schedule.status !== 2)
@@ -134,6 +143,55 @@ const OrderCkeckMan = () => {
                 />
               ))}
           </ScheduleDiv>
+          {isModalOpen && (
+            <ModalOverlay onClick={() => setIsModalOpen(false)}>
+              <ModalContent onClick={(e) => e.stopPropagation()}>
+                <h3>완료된 주문</h3>
+                <CloseButton onClick={() => setIsModalOpen(false)}>
+                  닫기
+                </CloseButton>
+                <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                  {schedules
+                    .filter((s) => s.status === 2)
+                    .map((s) => (
+                      <div
+                        key={s.id}
+                        style={{
+                          marginBottom: "10px",
+                          borderBottom: "1px solid #eee",
+                          paddingBottom: "8px",
+                        }}
+                      >
+                        <div>
+                          <strong>주문시간:</strong> {s.time}
+                        </div>
+                        <div>
+                          <strong>수량:</strong>{" "}
+                          {Array.isArray(s.menuCount)
+                            ? s.menuCount.join(", ")
+                            : s.menuCount}
+                        </div>
+                        <div>
+                          <strong>전화번호</strong>{" "}
+                          {s.phoneNumber ? s.phoneNumber : "전화번호 없음"}
+                        </div>
+                      </div>
+                    ))}
+                  {schedules.filter((s) => s.status === 2).length === 0 && (
+                    <div
+                      style={{
+                        color: "#888",
+                        textAlign: "center",
+                        marginTop: "20px",
+                      }}
+                    >
+                      완료된 주문이 없습니다.
+                    </div>
+                  )}
+                </div>
+              </ModalContent>
+            </ModalOverlay>
+          )}
         </RightDiv>
       </BodyDiv>
     </DDiv>
@@ -141,3 +199,35 @@ const OrderCkeckMan = () => {
 };
 
 export default OrderCkeckMan;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  position: relative;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+`;

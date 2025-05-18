@@ -85,25 +85,42 @@ const TText = styled.div`
   margin-bottom: 12vw;
 `;
 
+const TTText = styled.div`
+  color: var(--Color-2, #363636);
+  margin-top: 10vw;
+  text-align: center;
+  font-family: "Noto Sans KR";
+  font-size: 1.5vw;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  margin-bottom: 12vw;
+`;
+
 function HomePage() {
   const navigate = useNavigate();
 
   return (
     <Container>
-      <MainText>안녕하세요! 한동 공략 1조입니다.</MainText>
+      <MainText>PARD 장사를 할까요~말까요~ </MainText>
       <Message>
-        퀴즈 3개 이상 맞춘 <br />
-        가격을 할인해 드리고 있습니다! <br />
-        많은 참여 부탁드립니다😊
+        PARD가 <br />
+        더 쾌적한 동아리 운영을 위해 <br />
+        장사를 진행합니다!
       </Message>
-      <TText>(3, 4개 500원 할인 / 5개 700원 할인 - 재응시 1회)</TText>
+      <TText>
+        <br />
+        일정 : 5월 20일(화) ~ 5월 22일(목)
+        <br /> 장소: 한동대 학생회관 앞
+      </TText>
       <OrderButton onClick={() => navigate("/order")}>주문하기</OrderButton>
       {/* <Button onClick={() => navigate("/order-CheckMan")}>퀴즈풀기</Button> */}
-      <Button onClick={() => navigate("/quiz")}>퀴즈풀기</Button>
       <TextLogo src={require("../../Asset/logo.png")} />
-      <Modal onClick={() => navigate("/vote")}>
+      {/* <Modal onClick={() => navigate("/vote")}>
         <NewQuizImg src={require("../../Asset/notify.png")} />
-      </Modal>
+      </Modal> */}
+
+      <TTText>Copyright 2024. PARD. All rights reserved.</TTText>
     </Container>
   );
 }
