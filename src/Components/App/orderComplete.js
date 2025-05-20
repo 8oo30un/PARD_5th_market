@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import checkMark from "../../Asset/CheckGreen.png";
-import { useNavigate } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
+import { useNavigate, useLocation } from "react-router-dom";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
 import { dbService } from "../../fbase";
 
 const Container = styled.div`
@@ -14,32 +14,16 @@ const Container = styled.div`
 `;
 
 const CheckIcon = styled.img`
-  width: 16%; // Adjust size as needed
-  margin-bottom: 6vw;
-  margin-top: 30vw;
-`;
-
-const Message = styled.div`
-  color: #000;
-  font-family: "Noto Sans";
-  font-size: 25px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 140%;
-  text-align: center;
-
-  span {
-    font-weight: 700;
-  }
+  width: 16%;
+  margin-bottom: 2vw;
+  margin-top: 15vw;
 `;
 
 const AcountText = styled.div`
   color: var(--Color-2, #363636);
-
   text-align: center;
   font-family: "Noto Sans";
   font-size: 14px;
-  font-style: normal;
   font-weight: 700;
   line-height: 140%;
   margin-top: 3.7333vw;
@@ -49,11 +33,10 @@ const SubmitText = styled.div`
   color: var(--Color-2, #363636);
   text-align: center;
   font-family: "Noto Sans";
-  font-size: 9px;
-  font-style: normal;
-  font-weight: 400;
+  font-size: 25px;
+  font-weight: 700;
   line-height: 140%;
-  margin-top: 0.8vw;
+  margin-top: 2vw;
   margin-bottom: 3.2vw;
 `;
 
@@ -67,7 +50,7 @@ const Button = styled.button`
   font-weight: 500;
   cursor: pointer;
   border-radius: 2.9333vw;
-  border: 1px solid #00a86b; // 초록색 태두리
+  border: 1px solid #00a86b;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,11 +81,10 @@ const StyledInput = styled.input`
   border-radius: 2.9333vw;
   background: #e5fcf4;
   border: none;
-  margin-top: 18vw;
+  margin-top: 8vw;
   color: #797979;
   font-family: "Noto Sans";
   font-size: 3.7333vw;
-  font-style: normal;
   font-weight: 400;
   line-height: 140%;
 
@@ -111,8 +93,7 @@ const StyledInput = styled.input`
   }
 
   &:focus {
-    // 포커스 시 스타일
-    outline: none; // 기본 아웃라인 제거
+    outline: none;
   }
 `;
 
@@ -124,7 +105,6 @@ const SubmitButton = styled.button`
   text-align: center;
   font-family: "Noto Sans";
   font-size: 4.2667vw;
-  font-style: normal;
   font-weight: 500;
   line-height: 140%;
   border: none;
@@ -133,44 +113,54 @@ const SubmitButton = styled.button`
 
 function OrderCompletionScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { orders, price, sale } = location.state || {};
 
   const [isCopied, setIsCopied] = useState(false);
-  const [docId, setDocId] = useState(0);
-  const [phoneNumber, setPhoneNumber] = useState(""); // 전화번호 상태 변수 추가
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText("79421209518");
-      setIsCopied(true); // 상태를 "복사완료"로 변경
+      setIsCopied(true);
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
   };
 
-  useEffect(() => {
-    setDocId(localStorage.getItem("id"));
-  }, []);
-
   const handleOnUpdate = async () => {
-    // 유효성 검사: null, 빈 문자열, 공백 문자열 방지
     if (!phoneNumber || phoneNumber.trim() === "") {
       alert("전화번호를 입력해주세요.");
-      return; // 아래 로직 실행하지 않음
+      return;
     }
 
-    const docRef = doc(dbService, "order", docId);
-    await updateDoc(docRef, {
-      phoneNumber: phoneNumber, // 업데이트 문서에 전화번호 사용
-    });
-    if (docRef) {
-      console.log("update 성공");
+    try {
+      const orderData = {
+        time: new Date(),
+        menuCount: orders,
+        price: price,
+        phoneNumber: phoneNumber,
+        status: 0,
+      };
+
+      const docRef = await addDoc(collection(dbService, "order"), orderData);
+      await updateDoc(docRef, { id: docRef.id });
+
+      localStorage.setItem("id", docRef.id);
+      localStorage.setItem("phone", phoneNumber);
+      localStorage.setItem("price", price - sale);
+
+      console.log("주문 저장 성공");
       navigate("/order-finished");
       alert("주문 감사드립니다! \n맛있게, 금방 조리해드리겠습니다.");
+    } catch (error) {
+      console.error("주문 저장 실패:", error);
+      alert("주문 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   const handleChange = (event) => {
-    setPhoneNumber(event.target.value); // 입력 필드가 변경될 때마다 phoneNumber 상태 업데이트
+    setPhoneNumber(event.target.value);
   };
 
   function formatPrice(price) {
@@ -183,15 +173,11 @@ function OrderCompletionScreen() {
   return (
     <Container>
       <CheckIcon src={checkMark} alt="Check Mark" />
-      <Message>
-        <span>주문</span> 완료를 위해 <br />
-        번호를 입력해주세요!
-      </Message>
       <AcountText>
         {formatPrice(localStorage.getItem("price"))}원,
         <br /> <span>79421209518 카카오뱅크 김기영</span>
       </AcountText>
-      <SubmitText> 입금 후 내역을 부스 운영자들에게 보여주세요.</SubmitText>
+      <SubmitText>입금 후 내역을 부스 운영자들에게 보여주세요.</SubmitText>
       <Button onClick={handleCopy}>
         <Icon
           src={
@@ -208,9 +194,7 @@ function OrderCompletionScreen() {
         onChange={handleChange}
       />
       <ExplainText>
-        번호를 적고 앞에 스태프에게 보여주세요!
-        <br />
-        음식이 완료되면, 입력하신 번호로 문자를 보내드립니다!
+        휴대폰 번호를 입력해주세요.
         <br />
         <br />
         이용해주셔서 감사합니다.

@@ -102,7 +102,7 @@ function HomePage() {
 
   return (
     <Container>
-      <MainText>PARD 장사를 할까요~말까요~ </MainText>
+      <MainText>🐥 PARD 콜팝 부스 운영 🐥 </MainText>
       <Message>
         PARD가 <br />
         더 쾌적한 동아리 운영을 위해 <br />
@@ -120,7 +120,7 @@ function HomePage() {
         <NewQuizImg src={require("../../Asset/notify.png")} />
       </Modal> */}
 
-      <TTText>Copyright 2024. PARD. All rights reserved.</TTText>
+      <TTText>Copyright 2025. PARD. All rights reserved.</TTText>
     </Container>
   );
 }

@@ -4,14 +4,7 @@ import { useOrder } from "../../contexts/OrderContext";
 import React, { useState, useEffect, useContext } from "react";
 import { ScoreContext } from "../../contexts/ScoreContext";
 import { useNavigate } from "react-router-dom";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
-import { dbService } from "../../fbase"; // fbase.js에서 dbService 가져오기
+// Firestore imports removed
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useMenu } from "../../contexts/MenuContext";
@@ -175,35 +168,9 @@ function MenuCheck() {
     SetSale(discount);
   }, []);
 
-  const handleOnSubmit = async () => {
-    console.log("주문 시작");
-    setIsLoading(true);
-
-    const orderData = {
-      time: new Date(),
-      menuCount: orders,
-      price: price,
-      phoneNumber: "",
-      status: 0,
-    };
-
-    try {
-      const docRef = await addDoc(collection(dbService, "order"), orderData);
-      console.log("Document written with ID: ", docRef.id);
-
-      await updateDoc(doc(dbService, "order", docRef.id), {
-        id: docRef.id,
-      });
-      navigate("/order-submit");
-      localStorage.setItem("id", docRef.id);
-      localStorage.setItem("price", price - sale);
-      SetPrice(0);
-      SetSale(0);
-      setOrders([0, 0]);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error writing document: ", error);
-    }
+  const handleOnSubmit = () => {
+    // Navigate to /order-submit and pass orders, price, sale as state
+    navigate("/order-submit", { state: { orders, price, sale } });
   };
 
   const override = {
