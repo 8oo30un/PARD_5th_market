@@ -36,7 +36,7 @@ function OrderFinishedPage() {
   const navigate = useNavigate();
 
   const handleReturn = () => {
-    navigate("/qr");
+    navigate("/");
   };
 
   return (
