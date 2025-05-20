@@ -1,11 +1,20 @@
+import { PacmanLoader } from "react-spinners";
 import styled from "styled-components";
 import { useOrder } from "../../contexts/OrderContext";
 import React, { useState, useEffect, useContext } from "react";
 import { ScoreContext } from "../../contexts/ScoreContext";
 import { useNavigate } from "react-router-dom";
-import { dbService } from "../../fbase";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
-import { PacmanLoader } from "react-spinners";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { dbService } from "../../fbase"; // fbase.js에서 dbService 가져오기
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useMenu } from "../../contexts/MenuContext";
 
 const Div = styled.div`
   display: flex;
@@ -143,19 +152,27 @@ function MenuCheck() {
   const [sale, SetSale] = useState(0);
   const { score } = useContext(ScoreContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const navigate = useNavigate();
+  const { menuData } = useMenu();
 
   useEffect(() => {
     let extra = 0;
-    if (score == 5) {
+    if (score === 5) {
       extra = 700;
     } else if (score >= 3) {
       extra = 500;
     }
-    SetPrice(orders[0] * 5300 + orders[1] * 5300);
-    SetSale(extra * orders[0] + extra * orders[1]);
 
-    console.log("가격 : ", price, "sale : ", sale);
+    let total = 0;
+    let discount = 0;
+    for (let i = 0; i < menuData.length; i++) {
+      total += orders[i] * menuData[i].price;
+      discount += orders[i] * extra;
+    }
+
+    SetPrice(total);
+    SetSale(discount);
   }, []);
 
   const handleOnSubmit = async () => {
@@ -175,11 +192,11 @@ function MenuCheck() {
       console.log("Document written with ID: ", docRef.id);
 
       await updateDoc(doc(dbService, "order", docRef.id), {
-        id: docRef.id
+        id: docRef.id,
       });
       navigate("/order-submit");
       localStorage.setItem("id", docRef.id);
-      localStorage.setItem("price", price-sale);
+      localStorage.setItem("price", price - sale);
       SetPrice(0);
       SetSale(0);
       setOrders([0, 0]);
@@ -211,34 +228,39 @@ function MenuCheck() {
   }
 
   function formatPrice(price) {
-    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price);
+    return new Intl.NumberFormat("ko-KR", {
+      style: "currency",
+      currency: "KRW",
+    }).format(price);
   }
 
   return (
     <Div>
       <TitleText>주문 내역</TitleText>
       <WhiteBackBox>
-        <NameText>한동 공략 1조</NameText>
-        <FlexDiv bottom={8.8}>
-          <MenuImg src={require("../../Asset/SamSoSq.png")} />
-          <FlexDiv col="column" ali="flex-start">
-            <Menuname>삼겹살 + 소세지</Menuname>
-            <FlexDiv justifyContent="space-between">
-              <MenuNum>수량 : {orders[0]}</MenuNum>
-              <Price>{formatPrice(orders[0] * 5300)} 원</Price>
+        <NameText>주문서</NameText>
+        {menuData.map((item, idx) => (
+          <FlexDiv bottom={8.8} key={item.id}>
+            <MenuImg
+              src={item.image}
+              onLoad={() => setIsImageLoading(false)}
+              style={{ display: isImageLoading ? "none" : "block" }}
+            />
+            {isImageLoading && (
+              <Skeleton
+                width={(20 * window.innerWidth) / 100}
+                height={(20 * window.innerWidth) / 100}
+              />
+            )}
+            <FlexDiv col="column" ali="flex-start">
+              <Menuname>{item.name}</Menuname>
+              <FlexDiv justifyContent="space-between">
+                <MenuNum>수량 : {orders[idx]}</MenuNum>
+                <Price>{formatPrice(orders[idx] * item.price)} 원</Price>
+              </FlexDiv>
             </FlexDiv>
           </FlexDiv>
-        </FlexDiv>
-        <FlexDiv>
-          <MenuImg src={require("../../Asset/SamBeeSq.png")} />
-          <FlexDiv col="column" ali="flex-start">
-            <Menuname>삼겹살 + 비빔면</Menuname>
-            <FlexDiv justifyContent="space-between">
-              <MenuNum>수량 : {orders[1]}</MenuNum>
-              <Price>{formatPrice(orders[1] * 5300)} 원</Price>
-            </FlexDiv>
-          </FlexDiv>
-        </FlexDiv>
+        ))}
       </WhiteBackBox>
       <PriceCheck per={80} bottom={7}>
         결제 내역
@@ -251,14 +273,7 @@ function MenuCheck() {
           {formatPrice(price)}원
         </PriceCheck>
       </FlexDiv>
-      <FlexDiv justifyContent="space-between" per={80}>
-        <PriceCheck weight={500} align="center">
-          할인금액
-        </PriceCheck>
-        <PriceCheck size={18} align="center">
-          {formatPrice(sale)}원
-        </PriceCheck>
-      </FlexDiv>
+      <FlexDiv justifyContent="space-between" per={80} bottom={-6}></FlexDiv>
       <Hr />
       <FlexDiv justifyContent="space-between" per={80} bottom={6}>
         <PriceCheck weight={500} align="center">

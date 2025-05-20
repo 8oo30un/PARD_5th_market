@@ -3,6 +3,7 @@ import { useSwipeable } from "react-swipeable";
 import { deleteDoc, doc } from "firebase/firestore";
 import { dbService } from "../../../fbase";
 import styled from "styled-components";
+import { useMenu } from "../../../contexts/MenuContext";
 
 const FlexDiv = styled.div`
   width: 100%;
@@ -67,6 +68,7 @@ const ScheduleItem = styled.div`
 
 const ScheduleItemComponent = ({ schedule, index, handleStatusChange }) => {
   const [isSwiping, setIsSwiping] = useState(false);
+  const { menuData } = useMenu();
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -104,16 +106,20 @@ const ScheduleItemComponent = ({ schedule, index, handleStatusChange }) => {
             <HomeTitle>주문 순서: {index + 1}</HomeTitle>
             <FlexDiv>
               <div>
-                <NumText>삼 + 소 수량: {schedule.menuCount[0]}</NumText>
-                <NumText>삼 + 비 수량: {schedule.menuCount[1]}</NumText>
+                <NumText>
+                  {menuData[0].name} 수량: {schedule.menuCount[0]}
+                </NumText>
+                <NumText>
+                  {menuData[1].name} 수량: {schedule.menuCount[1]}
+                </NumText>
               </div>
             </FlexDiv>
           </div>
-         <div>
-         <HomeTitle>고객 전화번호</HomeTitle>
-          <NumText>{schedule.phoneNumber}</NumText>
-          <NumText>{schedule.time}</NumText>
-         </div>
+          <div>
+            <HomeTitle>고객 전화번호</HomeTitle>
+            <NumText>{schedule.phoneNumber}</NumText>
+            <NumText>{schedule.time}</NumText>
+          </div>
         </FlexDiv>
         <Button
           status={schedule.status}

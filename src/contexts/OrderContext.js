@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState([0, 0]);  // 두 메뉴 아이템의 초기 수량 설정
+  const [orders, setOrders] = useState([0, 0]); // 두 메뉴 아이템의 초기 수량 설정
 
   const updateOrder = (index, count) => {
     const newOrders = [...orders];
